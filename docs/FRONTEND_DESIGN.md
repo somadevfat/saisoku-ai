@@ -20,10 +20,13 @@ src/
 ├── features/             # ドメインロジック（機能単位）
 │   ├── tasks/
 │   │   ├── components/   # タスク固有の Server/Client Components
-│   │   ├── actions.ts    # この機能に関連する Server Actions
-│   │   ├── schemas.ts    # Zod スキーマ（Client/Server 共通）
-│   │   ├── service.ts    # データ取得ロジック（RSC から呼び出す）
-│   │   └── types.ts      # 型定義
+│   │   ├── hooks/        # カスタムフック (Client Component 用)
+│   │   │   └── tests/    # フックのテスト
+│   │   ├── actions.ts    # Server Actions
+│   │   ├── schemas.ts    # Zod スキーマ
+│   │   ├── service.ts    # データ取得ロジック
+│   │   ├── types.ts      # 型定義
+│   │   └── tests/        # service, actions, schemas のテスト
 │   └── reminders/
 ├── lib/                  # 共通ライブラリ設定 (supabase, msw)
 └── utils/                # 純粋関数（テスト対象）
@@ -55,7 +58,14 @@ src/
 3. 成功後、リポジトリ層（Supabase等）を更新。
 4. `revalidatePath` を呼び出し、サーバーキャッシュを無効化して画面を自動更新。
 
-## 5. テスト戦略
-- **Vitest (Service/Logic)**: `service.ts` や `utils/` をテスト。API 通信が発生する部分は、`msw/node` を使用してネットワークレベルでモックし、本物の DB や外部 API には一切接続しない。
-- **Playwright (E2E)**: `msw/browser` を活用。UI 上での操作（タスク登録、完了報告等）から Server Actions 経由の通信まで、ブラウザ内 Service Worker で完全にモックされた環境でテストを実行。
-- **原則**: 全てのテスト環境において本物のデータベースは使用せず、定義した MSW ハンドラーを唯一のソースとして扱う（Backend-Agnostic な開発）。
+## 5. TDD (Test-Driven Development) プロセス
+- **Red**: 実装前に必ず失敗するテストを書く。
+  - Logic/Service: `feature/**/test/*.test.ts` (Vitest)
+  - UI/Workflow: `tests/e2e/*.spec.ts` (Playwright + MSW)
+- **Green**: テストを通すための最小限の実装を行う。
+- **Refactor**: 型の整理やコードの共通化を行い、テストが通る状態を維持する。
+
+## 6. テスト戦略
+- **Vitest (Unit/Service)**: 純粋関数、Zodバリデーション、Service層（データ取得）のロジック。
+- **Playwright (E2E/Integration)**: 「タスク登録〜煽りリマインド〜完了報告」のハッピーパス。
+- **Mocking**: 全てのテストにおいて MSW を使用し、常に再現性のある（不確定要素を排除した）状態で開発を進める。
