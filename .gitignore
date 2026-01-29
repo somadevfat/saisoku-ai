@@ -1,0 +1,38 @@
+# Logic / Dependencies
+node_modules/
+.pnp
+.pnp.*
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environments
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Testing
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache
+
+# Bun
+bun.lockb
+node_modules/
