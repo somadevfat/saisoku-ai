@@ -10,8 +10,15 @@ export async function apiClient<T>(
     endpoint: string,
     options: RequestInit = {}
 ): Promise<T> {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? ''
-    const response = await fetch(`${baseUrl}${endpoint}`, {
+    // NEXT_PUBLIC_API_URL が未定義の場合は相対パスとして扱う
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || ''
+
+    // URL の組み立て
+    const url = baseUrl
+        ? `${baseUrl.replace(/\/$/, '')}/${endpoint.replace(/^\//, '')}`
+        : endpoint
+
+    const response = await fetch(url, {
         ...options,
         headers: {
             'Content-Type': 'application/json',
